@@ -1,0 +1,70 @@
+﻿@{
+    ViewBag.Title = "Calculate Factorial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Calculate Factorial</h2>
+
+<div class="row">
+    <form>
+        <div class="form-group">
+            <label for="number">Enter a number:</label>
+            <input type="text" class="form-control" id="number" placeholder="Enter a value" onkeypress="return isIntegrNumber(event);">
+            <span id="numberValidation" style="display:none">Please Enter an integer value</span>
+        </div>
+        <div class="form-group">
+            <label for="result">Result</label>
+            <input type="text" class="form-control" id="result" readonly="readonly">
+        </div>
+        <button class="btn btn-success" type="button" id="btnSubmit">Calculate</button>
+        <button class="btn btn-primary" type="button" id="reset" name="reset">Reset</button>
+    </form>
+</div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/custom-validator")
+}
+<script>
+
+    function isIntegrNumber(e) {
+        e = e || window.event;
+        var charCode = e.which ? e.which : e.keyCode;
+        return /\d/.test(String.fromCharCode(charCode));
+    }
+
+    $(document).ready(function () {
+
+        $("#btnSubmit").click(function () {
+            var number = $("#number").val();
+            isIntegrNumber(number);
+            if (number == null || number == "") {
+                $("#numberValidation").css("display", "block");
+                $("#number").addClass("txt-danger");
+                $("#result").val('');
+                $("#number").focus();
+                return;
+            }
+
+            $.ajax({
+                url: "/Home/Calculate?number= " + $("#number").val() + "",
+                method: "POST",
+                success: function (data) {
+                    $("#numberValidation").css("display", "none");
+                    $("#number").removeClass("txt-danger");
+                    $("#result").val(data);
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+        });
+
+        $("#reset").click(function () {
+            $("#number").val('');
+            $("#result").val('');
+            $("#number").focus();
+        })
+    })
+</script>

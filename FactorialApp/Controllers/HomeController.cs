@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using IRepositories;
 using System.Web.Mvc;
 
 namespace FactorialApp.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        private readonly IRepository _repository;
+        public HomeController(IRepository repository)
+        {
+            _repository = repository;
+        }
+
+        [HttpGet]
+        public ActionResult CalculateFactorial()
         {
             return View();
         }
-
-        public ActionResult About()
+        [HttpPost]
+        public JsonResult Calculate(int number)
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            var result = _repository.CalculateFactorial(number);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }
